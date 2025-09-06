@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17.0.2"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="br.com.creche.controller.OSListaController"
+            prefWidth="1000" prefHeight="680" styleClass="root">
+
+    <top>
+        <HBox styleClass="app-bar" alignment="CENTER_LEFT" spacing="12">
+            <children>
+                <Label text="Ordens de Serviço" styleClass="app-title"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="Nova O.S." fx:id="btnNovaOSLista" onAction="#onNovaOS"/>
+            </children>
+            <padding>
+                <Insets top="8" right="16" bottom="8" left="16"/>
+            </padding>
+        </HBox>
+    </top>
+
+    <center>
+        <VBox spacing="12">
+            <padding>
+                <Insets top="12" right="16" bottom="16" left="16"/>
+            </padding>
+            <children>
+                <HBox spacing="8" alignment="CENTER_LEFT">
+                    <children>
+                        <Label text="Status:"/>
+                        <ChoiceBox fx:id="cbFiltroStatusLista" prefWidth="180"/>
+                        <TextField fx:id="txtBuscaOS" promptText="Buscar por número, título, categoria, solicitante, responsável..." HBox.hgrow="ALWAYS"/>
+                        <Button text="Buscar" fx:id="btnBuscarOS" onAction="#onBuscar"/>
+                    </children>
+                </HBox>
+
+                <TableView fx:id="tvOS" prefHeight="560">
+                    <columns>
+                        <TableColumn fx:id="colNumero" text="Número" prefWidth="120"/>
+                        <TableColumn fx:id="colTitulo" text="Título" prefWidth="260"/>
+                        <TableColumn fx:id="colCategoria" text="Categoria" prefWidth="160"/>
+                        <TableColumn fx:id="colSolicitante" text="Solicitante" prefWidth="180"/>
+                        <TableColumn fx:id="colResponsavel" text="Responsável" prefWidth="180"/>
+                        <TableColumn fx:id="colPrioridade" text="Prioridade" prefWidth="120"/>
+                        <TableColumn fx:id="colStatus" text="Status" prefWidth="140"/>
+                        <TableColumn fx:id="colPrazo" text="Prazo" prefWidth="140"/>
+                    </columns>
+                </TableView>
+            </children>
+        </VBox>
+    </center>
+</BorderPane>

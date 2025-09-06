@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17.0.2" xmlns:fx="http://javafx.com/fxml/1"
+            prefWidth="900" prefHeight="680" styleClass="root">
+
+    <top>
+        <HBox styleClass="app-bar" alignment="CENTER_LEFT" spacing="12">
+            <children>
+                <Label text="Usuários" styleClass="app-title"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="Novo Usuário" fx:id="btnNovoUsuario"/>
+            </children>
+            <padding>
+                <Insets top="8" right="16" bottom="8" left="16"/>
+            </padding>
+        </HBox>
+    </top>
+
+    <center>
+        <VBox spacing="12">
+            <padding>
+                <Insets top="12" right="16" bottom="16" left="16"/>
+            </padding>
+            <children>
+                <HBox spacing="8" alignment="CENTER_LEFT">
+                    <children>
+                        <TextField fx:id="txtBuscaUsuario" promptText="Buscar por nome ou e-mail..." HBox.hgrow="ALWAYS"/>
+                        <Button text="Buscar" fx:id="btnBuscarUsuario"/>
+                    </children>
+                </HBox>
+
+                <TableView fx:id="tvUsuarios" prefHeight="560">
+                    <columns>
+                        <TableColumn fx:id="colNome" text="Nome" prefWidth="240"/>
+                        <TableColumn fx:id="colEmail" text="E-mail" prefWidth="240"/>
+                        <TableColumn fx:id="colPapeis" text="Papéis" prefWidth="200"/>
+                        <TableColumn fx:id="colAtivo" text="Ativo" prefWidth="80"/>
+                    </columns>
+                </TableView>
+            </children>
+        </VBox>
+    </center>
+</BorderPane>

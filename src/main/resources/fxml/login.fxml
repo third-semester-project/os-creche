@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<?import javafx.scene.image.Image?>
+<BorderPane xmlns="http://javafx.com/javafx/17.0.2" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="br.com.creche.controller.LoginController" styleClass="root">
+    <center>
+        <StackPane>
+            <VBox alignment="CENTER" spacing="12">
+                <children>
+                    <ImageView fitHeight="80" fitWidth="80" preserveRatio="true">
+                        <image>
+                            <Image url="@../images/logo.png"/>
+                        </image>
+                    </ImageView>
+                    <Label text="Sistema de O.S. - Creche" styleClass="title"/>
+                    <Label text="Acesse com suas credenciais" styleClass="subtitle"/>
+                    <TextField fx:id="txtEmail" promptText="E-mail" prefWidth="300"/>
+                    <PasswordField fx:id="txtSenha" promptText="Senha" prefWidth="300"/>
+                    <HBox alignment="CENTER_LEFT" spacing="8" prefWidth="300">
+                        <children>
+                            <CheckBox fx:id="chkLembrar" text="Lembrar"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Hyperlink text="Esqueci a senha" onAction="#onEsqueciSenha"/>
+                        </children>
+                    </HBox>
+                    <Button fx:id="btnEntrar" text="Entrar" defaultButton="true" onAction="#onEntrar" prefWidth="300" styleClass="primary"/>
+                    <Label fx:id="lblErro" textFill="#E04B59" visible="false"/>
+                </children>
+                <padding><Insets top="24" bottom="24" left="24" right="24"/></padding>
+            </VBox>
+        </StackPane>
+    </center>
+</BorderPane>

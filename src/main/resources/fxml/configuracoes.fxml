@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17.0.2" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="br.com.creche.controller.ConfiguracoesController"
+            prefWidth="900" prefHeight="680" styleClass="root">
+
+    <top>
+        <HBox styleClass="app-bar" alignment="CENTER_LEFT" spacing="12">
+            <children>
+                <Label text="Configurações" styleClass="app-title"/>
+            </children>
+            <padding>
+                <Insets top="8" right="16" bottom="8" left="16"/>
+            </padding>
+        </HBox>
+    </top>
+
+    <center>
+        <ScrollPane fitToWidth="true">
+            <content>
+                <VBox spacing="16">
+                    <padding>
+                        <Insets top="24" right="24" bottom="24" left="24"/>
+                    </padding>
+                    <children>
+                        <VBox styleClass="card" spacing="12">
+                            <children>
+                                <Label text="Geral" styleClass="section-title"/>
+                                <GridPane hgap="12" vgap="8">
+                                    <columnConstraints>
+                                        <ColumnConstraints minWidth="180" prefWidth="220"/>
+                                        <ColumnConstraints hgrow="ALWAYS"/>
+                                    </columnConstraints>
+
+                                    <Label text="Nome da Organização:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                                    <TextField fx:id="txtOrg" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+                                    <Label text="Tema:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                                    <HBox spacing="8" GridPane.rowIndex="1" GridPane.columnIndex="1">
+                                        <children>
+                                            <ChoiceBox fx:id="cbTema" prefWidth="220"/>
+                                            <Button text="Aplicar" onAction="#onAplicarTema"/>
+                                        </children>
+                                    </HBox>
+
+                                    <Label text="Idioma:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                                    <ChoiceBox fx:id="cbIdioma" GridPane.rowIndex="2" GridPane.columnIndex="1" prefWidth="200"/>
+
+                                    <Label text="Notificações por e-mail:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                                    <CheckBox fx:id="chkEmail" GridPane.rowIndex="3" GridPane.columnIndex="1" text="Ativar"/>
+                                </GridPane>
+                            </children>
+                            <padding>
+                                <Insets top="16" right="16" bottom="16" left="16"/>
+                            </padding>
+                        </VBox>
+
+                        <HBox spacing="12" alignment="CENTER_RIGHT">
+                            <children>
+                                <Button text="Cancelar" fx:id="btnCancelarCfg" styleClass="secondary"/>
+                                <Button text="Salvar" fx:id="btnSalvarCfg" styleClass="primary"/>
+                            </children>
+                        </HBox>
+                    </children>
+                </VBox>
+            </content>
+        </ScrollPane>
+    </center>
+</BorderPane>

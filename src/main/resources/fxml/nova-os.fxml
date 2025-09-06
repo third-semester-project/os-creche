@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import java.lang.String?>
+
+<?import javafx.collections.FXCollections?>
+<BorderPane xmlns="http://javafx.com/javafx/17.0.2" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="br.com.creche.controller.NovaOSController"
+            prefWidth="900" prefHeight="680" styleClass="root">
+
+    <!-- Top App Bar -->
+    <top>
+        <HBox styleClass="app-bar" alignment="CENTER_LEFT" spacing="12">
+            <children>
+                <Button fx:id="btnVoltar" text="← Voltar" onAction="#onVoltar" styleClass="secondary"/>
+                <Label text="Nova Ordem de Serviço" styleClass="app-title"/>
+            </children>
+            <padding>
+                <Insets top="8" right="16" bottom="8" left="16"/>
+            </padding>
+        </HBox>
+    </top>
+
+    <!-- Content -->
+    <center>
+        <ScrollPane fitToWidth="true">
+            <content>
+                <VBox spacing="24">
+                    <padding>
+                        <Insets top="24" right="24" bottom="24" left="24"/>
+                    </padding>
+                    <children>
+
+                        <!-- Informações Básicas -->
+                        <VBox styleClass="card" spacing="16">
+                            <children>
+                                <Label text="Informações Básicas" styleClass="section-title"/>
+
+                                <GridPane hgap="16" vgap="12">
+                                    <columnConstraints>
+                                        <ColumnConstraints minWidth="140" prefWidth="160"/>
+                                        <ColumnConstraints hgrow="ALWAYS"/>
+                                        <ColumnConstraints minWidth="140" prefWidth="160"/>
+                                        <ColumnConstraints hgrow="ALWAYS"/>
+                                    </columnConstraints>
+
+                                    <!-- Linha 1: Número e Categoria -->
+                                    <Label text="Número:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                                    <TextField fx:id="txtNumero" promptText="Ex: OS-2025-0001"
+                                               GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+
+                                    <Label text="Categoria:" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
+                                    <ComboBox fx:id="cbCategoria" promptText="Selecione..."
+                                              GridPane.columnIndex="3" GridPane.rowIndex="0"/>
+
+                                    <!-- Linha 2: Título -->
+                                    <Label text="Título:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                                    <TextField fx:id="txtTitulo" promptText="Título da ordem de serviço"
+                                               GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.columnSpan="3"/>
+
+                                    <!-- Linha 3: Solicitante -->
+                                    <Label text="Solicitante:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                                    <TextField fx:id="txtSolicitante" promptText="Nome do solicitante"
+                                               GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.columnSpan="3"/>
+                                </GridPane>
+
+                                <!-- Descrição -->
+                                <VBox spacing="8">
+                                    <children>
+                                        <Label text="Descrição:"/>
+                                        <TextArea fx:id="txtDescricao"
+                                                  promptText="Descreva detalhadamente a ordem de serviço..."
+                                                  prefRowCount="5" wrapText="true"/>
+                                    </children>
+                                </VBox>
+                            </children>
+                            <padding>
+                                <Insets top="16" right="16" bottom="16" left="16"/>
+                            </padding>
+                        </VBox>
+
+                        <!-- Configurações -->
+                        <VBox styleClass="card" spacing="16">
+                            <children>
+                                <Label text="Configurações" styleClass="section-title"/>
+
+                                <GridPane hgap="16" vgap="12">
+                                    <columnConstraints>
+                                        <ColumnConstraints minWidth="140" prefWidth="160"/>
+                                        <ColumnConstraints hgrow="ALWAYS"/>
+                                        <ColumnConstraints minWidth="140" prefWidth="160"/>
+                                        <ColumnConstraints hgrow="ALWAYS"/>
+                                    </columnConstraints>
+
+                                    <!-- Linha 1: Prioridade e Status -->
+                                    <Label text="Prioridade:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                                    <ComboBox fx:id="cbPrioridade" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                                        <items>
+                                            <FXCollections fx:factory="observableArrayList">
+                                                <String fx:value="BAIXA"/>
+                                                <String fx:value="MEDIA"/>
+                                                <String fx:value="ALTA"/>
+                                            </FXCollections>
+                                        </items>
+                                    </ComboBox>
+
+                                    <Label text="Status:" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
+                                    <ComboBox fx:id="cbStatus" GridPane.columnIndex="3" GridPane.rowIndex="0">
+                                        <items>
+                                            <FXCollections fx:factory="observableArrayList">
+                                                <String fx:value="ABERTA"/>
+                                                <String fx:value="EM_ANDAMENTO"/>
+                                                <String fx:value="CONCLUIDA"/>
+                                                <String fx:value="CANCELADA"/>
+                                            </FXCollections>
+                                        </items>
+                                    </ComboBox>
+
+                                    <!-- Linha 2: Atribuído para e Prazo -->
+                                    <Label text="Atribuído para:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                                    <ComboBox fx:id="cbAtribuidoPara" promptText="Selecione um usuário..."
+                                              GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+
+                                    <Label text="Prazo:" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+                                    <DatePicker fx:id="dpPrazo" promptText="dd/mm/aaaa"
+                                                GridPane.columnIndex="3" GridPane.rowIndex="1"/>
+                                </GridPane>
+                            </children>
+                            <padding>
+                                <Insets top="16" right="16" bottom="16" left="16"/>
+                            </padding>
+                        </VBox>
+
+                        <!-- Observações -->
+                        <VBox styleClass="card" spacing="16">
+                            <children>
+                                <Label text="Observações Adicionais" styleClass="section-title"/>
+                                <TextArea fx:id="txtObservacoes"
+                                          promptText="Observações, notas ou informações complementares..."
+                                          prefRowCount="3" wrapText="true"/>
+                            </children>
+                            <padding>
+                                <Insets top="16" right="16" bottom="16" left="16"/>
+                            </padding>
+                        </VBox>
+
+                        <!-- Botões de Ação -->
+                        <HBox spacing="12" alignment="CENTER_RIGHT">
+                            <children>
+                                <Button fx:id="btnCancelar" text="Cancelar" onAction="#onCancelar"
+                                        styleClass="secondary" prefWidth="120"/>
+                                <Button fx:id="btnLimpar" text="Limpar Campos" onAction="#onLimpar"
+                                        styleClass="secondary" prefWidth="140"/>
+                                <Button fx:id="btnSalvarRodape" text="Salvar O.S." onAction="#onSalvar"
+                                        styleClass="primary" prefWidth="120"/>
+                            </children>
+                        </HBox>
+
+                    </children>
+                </VBox>
+            </content>
+        </ScrollPane>
+    </center>
+</BorderPane>

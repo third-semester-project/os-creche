@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.PieChart?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane fx:id="root" xmlns="http://javafx.com/javafx/17.0.2" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="br.com.creche.controller.DashboardController" prefWidth="1200" prefHeight="700"
+            styleClass="root">
+
+    <!-- Top App Bar -->
+    <top>
+        <HBox styleClass="app-bar" alignment="CENTER_LEFT" spacing="12">
+            <children>
+                <Label text="Dashboard" styleClass="app-title"/>
+                <Region>
+                    <HBox.hgrow>ALWAYS</HBox.hgrow>
+                </Region>
+                <TextField fx:id="txtBuscaGlobal" promptText="Buscar O.S., usuário..." prefWidth="300"/>
+                <MenuButton fx:id="mbUser" text="Admin">
+                    <items>
+                        <MenuItem text="Perfil" onAction="#onPerfil"/>
+                        <SeparatorMenuItem/>
+                        <MenuItem text="Sair" onAction="#onSair"/>
+                        <MenuItem text="Sair e esquecer login" onAction="#onSairESemLembrar"/>
+                    </items>
+                </MenuButton>
+            </children>
+            <padding>
+                <Insets top="8" bottom="8" left="16" right="16"/>
+            </padding>
+        </HBox>
+    </top>
+
+    <!-- Side Menu -->
+    <left>
+        <VBox styleClass="side-menu" spacing="8" prefWidth="220">
+            <children>
+                <Label text="Navegação" styleClass="side-title"/>
+                <ToggleButton fx:id="tbDashboard" text="Início" selected="true" onAction="#goDashboard"/>
+                <ToggleButton fx:id="tbOS" text="Ordens de Serviço" onAction="#goOS"/>
+                <ToggleButton fx:id="tbUsuarios" text="Usuários" onAction="#goUsuarios"/>
+                <ToggleButton fx:id="tbRelatorios" text="Relatórios" onAction="#goRelatorios"/>
+                <ToggleButton fx:id="tbConfiguracoes" text="Configurações" onAction="#goConfiguracoes"/>
+                <Region>
+                    <VBox.vgrow>ALWAYS</VBox.vgrow>
+                </Region>
+                <Label text="v1.0.0" styleClass="muted"/>
+            </children>
+            <padding>
+                <Insets top="16" left="12" right="12" bottom="16"/>
+            </padding>
+        </VBox>
+    </left>
+
+    <!-- Content -->
+    <center>
+        <ScrollPane fitToWidth="true">
+            <content>
+                <VBox spacing="16">
+                    <padding>
+                        <Insets top="16" right="16" bottom="16" left="16"/>
+                    </padding>
+                    <children>
+
+                        <!-- KPIs simples -->
+                        <HBox spacing="16">
+                            <children>
+                                <VBox styleClass="card kpi-card" spacing="4" prefWidth="220">
+                                    <children>
+                                        <Label text="Abertas" styleClass="kpi-title"/>
+                                        <Label fx:id="lblKpiAbertas" text="0" styleClass="kpi-value"/>
+                                    </children>
+                                    <padding>
+                                        <Insets top="16" right="16" bottom="16" left="16"/>
+                                    </padding>
+                                </VBox>
+                                <VBox styleClass="card kpi-card" spacing="4" prefWidth="220">
+                                    <children>
+                                        <Label text="Em Andamento" styleClass="kpi-title"/>
+                                        <Label fx:id="lblKpiEmAndamento" text="0" styleClass="kpi-value"/>
+                                    </children>
+                                    <padding>
+                                        <Insets top="16" right="16" bottom="16" left="16"/>
+                                    </padding>
+                                </VBox>
+                                <VBox styleClass="card kpi-card" spacing="4" prefWidth="220">
+                                    <children>
+                                        <Label text="Concluídas (mês)" styleClass="kpi-title"/>
+                                        <Label fx:id="lblKpiConcluidas" text="0" styleClass="kpi-value"/>
+                                    </children>
+                                    <padding>
+                                        <Insets top="16" right="16" bottom="16" left="16"/>
+                                    </padding>
+                                </VBox>
+                                <VBox styleClass="card kpi-card" spacing="4" prefWidth="220">
+                                    <children>
+                                        <Label text="Atrasadas" styleClass="kpi-title"/>
+                                        <Label fx:id="lblKpiAtrasadas" text="0" styleClass="kpi-value"/>
+                                    </children>
+                                    <padding>
+                                        <Insets top="16" right="16" bottom="16" left="16"/>
+                                    </padding>
+                                </VBox>
+                            </children>
+                        </HBox>
+
+                        <!-- Tabela + Gráfico -->
+                        <HBox spacing="16">
+                            <children>
+                                <VBox styleClass="card" spacing="8">
+                                    <VBox.vgrow>ALWAYS</VBox.vgrow>
+                                    <children>
+                                        <HBox alignment="CENTER_LEFT" spacing="8">
+                                            <children>
+                                                <Label text="O.S. Recentes" styleClass="section-title"/>
+                                                <Region>
+                                                    <HBox.hgrow>ALWAYS</HBox.hgrow>
+                                                </Region>
+                                                <ChoiceBox fx:id="cbFiltroStatus"/>
+                                                <Button fx:id="btnNovaOS" text="Nova O.S." onAction="#onNovaOS" styleClass="primary"/>
+                                                <Button fx:id="btnApagarOS" text="Apagar O.S." onAction="#onApagarOS" styleClass="danger"/>
+                                            </children>
+                                        </HBox>
+                                        <TableView fx:id="tvOSRecentes" prefHeight="360">
+                                            <VBox.vgrow>ALWAYS</VBox.vgrow>
+                                            <columns>
+                                                <TableColumn fx:id="colNumero" text="Número" prefWidth="120"/>
+                                                <TableColumn fx:id="colTitulo" text="Título" prefWidth="240"/>
+                                                <TableColumn fx:id="colCategoria" text="Categoria" prefWidth="140"/>
+                                                <TableColumn fx:id="colPrioridade" text="Prioridade" prefWidth="110"/>
+                                                <TableColumn fx:id="colSolicitante" text="Solicitante" prefWidth="160"/>
+                                                <TableColumn fx:id="colResponsavel" text="Responsável" prefWidth="160"/>
+                                                <TableColumn fx:id="colStatus" text="Status" prefWidth="120"/>
+                                                <TableColumn fx:id="colPrazo" text="Prazo" prefWidth="160"/>
+                                            </columns>
+                                        </TableView>
+                                    </children>
+                                    <padding>
+                                        <Insets top="16" right="16" bottom="16" left="16"/>
+                                    </padding>
+                                </VBox>
+
+                                <VBox styleClass="card" spacing="8" prefWidth="380">
+                                    <children>
+                                        <Label text="Por Status" styleClass="section-title"/>
+                                        <PieChart fx:id="pcStatus" prefHeight="360"/>
+                                    </children>
+                                    <padding>
+                                        <Insets top="16" right="16" bottom="16" left="16"/>
+                                    </padding>
+                                </VBox>
+                            </children>
+                        </HBox>
+
+                    </children>
+                </VBox>
+            </content>
+        </ScrollPane>
+    </center>
+</BorderPane>
