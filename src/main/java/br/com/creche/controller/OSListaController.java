@@ -63,7 +63,6 @@ public class OSListaController implements DashboardController.RequiresAuthServic
         colCategoria.setCellValueFactory(new PropertyValueFactory<>("categoria"));
         colSolicitante.setCellValueFactory(new PropertyValueFactory<>("solicitante"));
 
-        // mostrar nome do responsável (requer getAtribuidoParaNome no model e join no repo)
         colResponsavel.setCellValueFactory(new PropertyValueFactory<>("atribuidoPara"));
 
         colPrioridade.setCellValueFactory(new PropertyValueFactory<>("prioridade"));

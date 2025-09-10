@@ -99,9 +99,11 @@ public class DashboardController {
         colPrioridade.setCellValueFactory(new PropertyValueFactory<>("prioridade"));
         colSolicitante.setCellValueFactory(new PropertyValueFactory<>("solicitante"));
 
-        // Mostrando o NOME do atribuído, não o id. Requer que o model tenha getAtribuidoPara()
-        // e o repository preencha via LEFT JOIN.
-        colResponsavel.setCellValueFactory(new PropertyValueFactory<>("atribuidoPara"));
+        colResponsavel.setCellValueFactory(cd -> {
+            Usuario responsavel = cd.getValue().getAtribuidoPara();
+            String nome = responsavel != null ? responsavel.getNome() : "";
+            return new SimpleStringProperty(nome);
+        });
 
         colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
         colPrazo.setCellValueFactory(cd -> new SimpleStringProperty(

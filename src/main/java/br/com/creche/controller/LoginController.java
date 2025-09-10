@@ -26,8 +26,6 @@ public class LoginController {
 
     @FXML
     public void initialize() {
-        String info = br.com.creche.infra.DBHealth.pingInfo();
-        System.out.println(info);
         if (!br.com.creche.infra.DBHealth.testConnection()) {
             lblErro.setText("Sem conexão com o banco. Verifique as credenciais.");
             lblErro.setVisible(true);
@@ -63,6 +61,8 @@ public class LoginController {
                                     } catch (Exception e) {
                                         e.printStackTrace();
                                         javafx.application.Platform.runLater(() -> showError("Erro no autologin: " + e.getMessage()));
+                                    } finally {
+                                        btnEntrar.setDisable(false);
                                     }
                                 }).start();
                             }

@@ -29,9 +29,4 @@ public class Usuario {
     public Perfil getPerfilEnum() {
         return Perfil.from(this.perfil);
     }
-
-    @Override
-    public String toString() {
-        return this.nome;
-    }
 }

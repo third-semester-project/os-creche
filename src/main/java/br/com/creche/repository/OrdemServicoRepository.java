@@ -62,6 +62,7 @@ public class OrdemServicoRepository {
                     }
                     os.setObservacoes(rs.getString("observacoes"));
 
+
                     list.add(os);
                 }
             }
