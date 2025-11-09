@@ -3,12 +3,12 @@ package br.com.creche.repository;
 import br.com.creche.infra.DB;
 import br.com.creche.model.OrdemServico;
 import br.com.creche.model.Usuario;
-
 import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.sql.Types;
 
 public class OrdemServicoRepository {
 
@@ -78,13 +78,14 @@ public class OrdemServicoRepository {
 
     public void insert(OrdemServico os, Long usuarioId) {
         String sql = """
-        insert into ordens_servico
-        (numero, titulo, descricao, categoria, prioridade, status, solicitante, prazo, criado_por, atribuido_para, observacoes)
-        values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        returning id, data_abertura
-    """;
+            insert into ordens_servico
+            (numero, titulo, descricao, categoria, prioridade, status, solicitante, prazo, criado_por, atribuido_para, observacoes)
+            values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            returning id, data_abertura
+        """;
         try (var conn = DB.getConnection();
              var ps = conn.prepareStatement(sql)) {
+
             int i = 1;
             ps.setString(i++, os.getNumero());
             ps.setString(i++, os.getTitulo());
@@ -93,11 +94,29 @@ public class OrdemServicoRepository {
             ps.setString(i++, os.getPrioridade());
             ps.setString(i++, os.getStatus());
             ps.setString(i++, os.getSolicitante());
-            if (os.getPrazo() != null) ps.setObject(i++, os.getPrazo());
-            else ps.setObject(i++, null);
-            ps.setObject(i++, usuarioId); // criado_por
-            if (os.getAtribuidoPara() != null) ps.setObject(i++, os.getAtribuidoPara());
-            else ps.setObject(i++, null);
+
+            // prazo (timestamptz)
+            if (os.getPrazo() != null) {
+                ps.setObject(i++, os.getPrazo()); // OffsetDateTime/Instant/Timestamp (JDBC 4.2)
+            } else {
+                ps.setNull(i++, Types.TIMESTAMP_WITH_TIMEZONE);
+            }
+
+            // criado_por (BIGINT)
+            if (usuarioId != null) {
+                ps.setLong(i++, usuarioId);
+            } else {
+                ps.setNull(i++, Types.BIGINT);
+            }
+
+            // atribuido_para (BIGINT) -> usa o ID do usuário
+            Long atribuidoId = (os.getAtribuidoPara() != null) ? os.getAtribuidoPara().getId() : null;
+            if (atribuidoId != null) {
+                ps.setLong(i++, atribuidoId);
+            } else {
+                ps.setNull(i++, Types.BIGINT);
+            }
+
             ps.setString(i++, os.getObservacoes());
 
             try (var rs = ps.executeQuery()) {
@@ -107,20 +126,21 @@ public class OrdemServicoRepository {
                 }
             }
         } catch (Exception e) {
-            throw new RuntimeException("Erro ao inserir O.S.", e);
+            throw new RuntimeException("Erro ao inserir O.S.: " + e.getMessage(), e);
         }
     }
 
     public void update(OrdemServico os) {
         String sql = """
-        update ordens_servico set
-            numero = ?, titulo = ?, descricao = ?, categoria = ?, prioridade = ?,
-            status = ?, solicitante = ?, prazo = ?, atribuido_para = ?, observacoes = ?,
-            data_conclusao = case when ? = 'CONCLUIDA' and data_conclusao is null then now()
-                                  when ? <> 'CONCLUIDA' then null
-                                  else data_conclusao end
-        where id = ?
-    """;
+            update ordens_servico set
+                numero = ?, titulo = ?, descricao = ?, categoria = ?, prioridade = ?,
+                status = ?, solicitante = ?, prazo = ?, atribuido_para = ?, observacoes = ?,
+                data_conclusao = case when ? = 'CONCLUIDA' and data_conclusao is null then now()
+                                      when ? <> 'CONCLUIDA' then null
+                                      else data_conclusao end
+            where id = ?
+        """;
+        
         try (var conn = DB.getConnection();
              var ps = conn.prepareStatement(sql)) {
             int i = 1;
@@ -131,16 +151,24 @@ public class OrdemServicoRepository {
             ps.setString(i++, os.getPrioridade());
             ps.setString(i++, os.getStatus());
             ps.setString(i++, os.getSolicitante());
-            ps.setObject(i++, os.getPrazo());
-            ps.setObject(i++, os.getAtribuidoPara());
+
+            if (os.getPrazo() != null) ps.setObject(i++, os.getPrazo());
+            else ps.setNull(i++, Types.TIMESTAMP_WITH_TIMEZONE);
+
+            Long atribuidoId = (os.getAtribuidoPara() != null) ? os.getAtribuidoPara().getId() : null;
+            if (atribuidoId != null) ps.setLong(i++, atribuidoId);
+            else ps.setNull(i++, Types.BIGINT);
+
             ps.setString(i++, os.getObservacoes());
-            ps.setString(i++, os.getStatus()); // para case
-            ps.setString(i++, os.getStatus()); // para case
+
+            ps.setString(i++, os.getStatus());
+            ps.setString(i++, os.getStatus());
+
             ps.setLong(i++, os.getId());
 
             ps.executeUpdate();
         } catch (Exception e) {
-            throw new RuntimeException("Erro ao atualizar O.S.", e);
+            throw new RuntimeException("Erro ao atualizar O.S.: " + e.getMessage(), e);
         }
     }
 }
