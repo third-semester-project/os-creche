@@ -1,0 +1,314 @@
+================================================================================
+          EXPLICAÇÃO DO USUARIOCONTROLLER.JAVA
+================================================================================
+
+ARQUIVO: UsuarioController.java
+LOCALIZAÇÃO: src/main/java/br/com/creche/controller/
+FUNÇÃO: Controlador da tela de listagem e gerenciamento de usuários
+
+================================================================================
+1. O QUE É ESTE CONTROLADOR?
+================================================================================
+
+É a classe que controla a TELA PRINCIPAL de usuários do sistema.
+Ele é responsável por:
+  - Listar todos os usuários em uma tabela
+  - Buscar/filtrar usuários
+  - Abrir tela de cadastro de novo usuário
+  - Abrir tela de edição de usuário
+  - Inativar usuários
+
+É o "C" do padrão MVC (Model-View-Controller).
+
+================================================================================
+2. COMPONENTES DA TELA (ANOTAÇÃO @FXML)
+================================================================================
+
+Os atributos marcados com @FXML são os componentes visuais da tela:
+
+CAMPOS DE ENTRADA:
+  - txtBuscaUsuario: Campo de texto para digitar o termo de busca
+
+BOTÕES:
+  - btnNovoUsuario: Botão "Novo Usuário"
+  - btnEditarUsuario: Botão "Editar Usuário"
+  - btnInativarUsuario: Botão "Inativar Usuário"
+  - btnBuscarUsuario: Botão "Buscar"
+
+TABELA:
+  - tvUsuarios: A tabela que exibe a lista de usuários
+  - colNome: Coluna que mostra o nome
+  - colEmail: Coluna que mostra o e-mail
+  - colPapeis: Coluna que mostra o perfil (ADMIN, GESTOR, OPERADOR)
+  - colAtivo: Coluna que mostra se está ativo (true/false)
+
+REPOSITORY:
+  - usuarioRepository: Objeto para acessar o banco de dados
+
+================================================================================
+3. MÉTODO INITIALIZE() - CONFIGURAÇÃO INICIAL
+================================================================================
+
+Este método é executado AUTOMATICAMENTE quando a tela é aberta.
+
+O que ele faz:
+
+1. carregar()
+   → Busca os usuários do banco e preenche a tabela
+
+2. Configura as colunas da tabela:
+   colNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
+   colEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
+   colPapeis.setCellValueFactory(new PropertyValueFactory<>("perfil"));
+   colAtivo.setCellValueFactory(new PropertyValueFactory<>("ativo"));
+   
+   EXPLICAÇÃO: PropertyValueFactory mapeia o nome da coluna com o 
+   atributo da classe Usuario. Exemplo: "nome" busca o getNome() do Usuario.
+
+3. Adiciona duplo clique para editar:
+   tvUsuarios.setRowFactory(tv -> { ... })
+   
+   EXPLICAÇÃO: Quando o usuário dá DUPLO CLIQUE em uma linha da tabela,
+   abre automaticamente a tela de edição daquele usuário.
+
+================================================================================
+4. MÉTODO CARREGAR() - LISTAR USUÁRIOS
+================================================================================
+
+public void carregar() {
+    List<Usuario> list = usuarioRepository.find(500);
+    tvUsuarios.setItems(FXCollections.observableArrayList(list));
+}
+
+O QUE FAZ:
+1. Busca até 500 usuários do banco de dados
+2. Converte para ObservableList (formato que o JavaFX entende)
+3. Preenche a tabela com os dados
+
+QUANDO É CHAMADO:
+- Ao abrir a tela (no initialize)
+- Após cadastrar novo usuário
+- Após editar um usuário
+- Após inativar um usuário
+- Quando limpa a busca
+
+================================================================================
+5. MÉTODO ONBUSCAR() - BUSCAR/FILTRAR USUÁRIOS
+================================================================================
+
+@FXML
+public void onBuscar() { ... }
+
+O QUE FAZ:
+1. Pega o texto digitado no campo txtBuscaUsuario
+2. Se o campo estiver VAZIO:
+   → Carrega todos os usuários (chama carregar())
+3. Se tiver TEXTO:
+   → Busca usuários por nome OU e-mail que contenham aquele texto
+   → Atualiza a tabela com os resultados filtrados
+
+EXEMPLO DE USO:
+- Usuário digita "maria" → mostra todos que têm "maria" no nome ou email
+- Usuário apaga o texto → volta a mostrar todos
+
+================================================================================
+6. MÉTODO ONNOVOUSUARIO() - CADASTRAR NOVO USUÁRIO
+================================================================================
+
+@FXML
+public void onNovoUsuario() { ... }
+
+O QUE FAZ:
+1. Carrega o arquivo FXML da tela de novo usuário (novo-usuario.fxml)
+2. Pega o controlador daquela tela (NovoUsuarioController)
+3. Define um callback: quando salvar, chama carregar() para atualizar a lista
+4. Aplica o CSS da aplicação
+5. Cria uma janela MODAL (tela que fica "por cima" e trava a principal)
+6. Exibe a tela de cadastro
+
+QUANDO É EXECUTADO:
+- Quando o usuário clica no botão "Novo Usuário"
+
+EXPLICAÇÃO TÉCNICA:
+- FXMLLoader: Carrega o layout da tela
+- controller.setOnSaved(this::carregar): Passa a função carregar() para ser
+  chamada após salvar
+- Modality.WINDOW_MODAL: Trava a tela principal até fechar a janela
+
+================================================================================
+7. MÉTODO ONEDITARUSUARIO() - EDITAR USUÁRIO SELECIONADO
+================================================================================
+
+@FXML
+public void onEditarUsuario() { ... }
+
+O QUE FAZ:
+1. Pega o usuário SELECIONADO na tabela
+2. Se NENHUM usuário foi selecionado:
+   → Mostra alerta: "Selecione um usuário na tabela para editar."
+3. Se TEM usuário selecionado:
+   → Chama o método abrirEditor(usuario)
+
+QUANDO É EXECUTADO:
+- Quando o usuário clica no botão "Editar Usuário"
+
+================================================================================
+8. MÉTODO ONINATIVARUSUARIO() - INATIVAR USUÁRIO
+================================================================================
+
+@FXML
+public void onInativarUsuario() { ... }
+
+O QUE FAZ:
+1. Pega o usuário SELECIONADO na tabela
+2. Se NENHUM usuário foi selecionado:
+   → Mostra alerta: "Selecione um usuário na tabela para inativar."
+3. Se TEM usuário selecionado:
+   → Mostra janela de CONFIRMAÇÃO:
+     "Deseja realmente inativar este usuário?"
+     "Usuário: [Nome do usuário]"
+4. Se o usuário confirmar clicando em OK:
+   → Chama usuarioRepository.inactivate(id)
+   → Atualiza o campo "ativo = false" no banco
+   → Mostra mensagem: "Usuário inativado com sucesso!"
+   → Recarrega a lista (chama carregar())
+
+QUANDO É EXECUTADO:
+- Quando o usuário clica no botão "Inativar Usuário"
+
+OBSERVAÇÃO IMPORTANTE:
+NÃO DELETA O USUÁRIO DO BANCO!
+Apenas marca como inativo (soft delete).
+Isso preserva histórico e integridade dos dados.
+
+================================================================================
+9. MÉTODO ABRIREDITOR() - ABRIR TELA DE EDIÇÃO
+================================================================================
+
+private void abrirEditor(Usuario usuario) { ... }
+
+O QUE FAZ:
+1. Carrega o arquivo FXML da tela de edição (editar-usuario.fxml)
+2. Pega o controlador daquela tela (EditarUsuarioController)
+3. Passa o objeto Usuario para o controlador (controller.setUsuario(usuario))
+4. Define callback: quando salvar, chama carregar() para atualizar a lista
+5. Aplica o CSS
+6. Define título da janela: "Editar Usuário - [Nome do usuário]"
+7. Cria janela MODAL
+8. Exibe a tela de edição
+
+QUANDO É EXECUTADO:
+- Quando o usuário clica no botão "Editar Usuário"
+- Quando o usuário dá DUPLO CLIQUE em uma linha da tabela
+
+DIFERENÇA PARA NOVO USUÁRIO:
+- Aqui os campos já vêm PREENCHIDOS com os dados atuais do usuário
+- O controlador EditarUsuarioController recebe o objeto via setUsuario()
+
+================================================================================
+10. FLUXO COMPLETO DE USO
+================================================================================
+
+CENÁRIO 1: LISTAR USUÁRIOS
+  1. Usuário abre tela "Usuários"
+  2. initialize() é executado automaticamente
+  3. carregar() busca usuários do banco
+  4. Tabela é preenchida com os dados
+
+CENÁRIO 2: BUSCAR USUÁRIO
+  1. Usuário digita "maria" no campo de busca
+  2. Clica no botão "Buscar"
+  3. onBuscar() é executado
+  4. findByNomeOrEmail("maria") busca no banco
+  5. Tabela é atualizada com resultados filtrados
+
+CENÁRIO 3: CADASTRAR NOVO USUÁRIO
+  1. Usuário clica em "Novo Usuário"
+  2. onNovoUsuario() abre janela modal
+  3. Usuário preenche formulário
+  4. Clica em "Salvar"
+  5. NovoUsuarioController valida e insere no banco
+  6. Janela fecha
+  7. carregar() é executado automaticamente
+  8. Lista é atualizada com o novo usuário
+
+CENÁRIO 4: EDITAR USUÁRIO
+  1. Usuário dá duplo clique em uma linha da tabela
+  2. abrirEditor(usuario) é executado
+  3. Janela modal abre com dados preenchidos
+  4. Usuário altera os campos
+  5. Clica em "Salvar"
+  6. EditarUsuarioController valida e atualiza no banco
+  7. Janela fecha
+  8. carregar() é executado automaticamente
+  9. Lista é atualizada
+
+CENÁRIO 5: INATIVAR USUÁRIO
+  1. Usuário seleciona uma linha da tabela
+  2. Clica em "Inativar Usuário"
+  3. onInativarUsuario() mostra confirmação
+  4. Usuário confirma
+  5. usuarioRepository.inactivate(id) atualiza no banco
+  6. carregar() é executado
+  7. Lista é atualizada (usuário aparece como inativo)
+
+================================================================================
+11. TECNOLOGIAS E CONCEITOS USADOS
+================================================================================
+
+JAVAFX:
+  - TableView: Componente de tabela
+  - FXML: Layout das telas em XML
+  - FXMLLoader: Carrega arquivos FXML
+  - Scene: Representa uma tela
+  - Stage: Representa uma janela
+  - Alert: Janelas de diálogo (confirmação, aviso, erro)
+
+PADRÕES DE PROJETO:
+  - MVC (Model-View-Controller)
+  - Repository Pattern (acesso ao banco)
+  - Callback (setOnSaved)
+
+CONCEITOS JAVA:
+  - Anotações (@FXML)
+  - Expressões Lambda (this::carregar)
+  - Programação Orientada a Eventos (onClick)
+  - Try-Catch (tratamento de exceções)
+
+================================================================================
+12. PONTOS FORTES DO CÓDIGO
+================================================================================
+
+✓ Separação de responsabilidades (Controller não acessa banco diretamente)
+✓ Reutilização de código (método carregar() usado em vários lugares)
+✓ Feedback visual (Alerts para confirmar ações)
+✓ Interface intuitiva (duplo clique para editar)
+✓ Validações (verifica se usuário foi selecionado)
+✓ Segurança (confirmação antes de inativar)
+✓ Soft delete (não apaga dados do banco)
+✓ Código limpo e organizado
+✓ Tratamento de exceções
+
+================================================================================
+13. RESUMO PARA O PROFESSOR
+================================================================================
+
+O UsuarioController é o CORAÇÃO da funcionalidade de gerenciamento de 
+usuários do sistema. Ele implementa todas as operações CRUD através de uma 
+interface gráfica intuitiva:
+
+- CREATE: Abre tela modal de cadastro
+- READ: Lista usuários em tabela com busca/filtro
+- UPDATE: Abre tela modal de edição (duplo clique ou botão)
+- DELETE: Inativação lógica com confirmação (soft delete)
+
+O código segue boas práticas de programação, separando a lógica de 
+apresentação (Controller) da lógica de acesso a dados (Repository), 
+facilitando manutenção e escalabilidade do sistema.
+
+A interface é responsiva e fornece feedback constante ao usuário através 
+de alertas, tornando a experiência de uso clara e profissional.
+
+================================================================================
+FIM DA EXPLICAÇÃO
+================================================================================
