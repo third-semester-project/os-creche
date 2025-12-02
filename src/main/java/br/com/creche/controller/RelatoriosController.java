@@ -44,7 +44,7 @@ public class RelatoriosController implements DashboardController.RequiresAuthSer
         String categoria = cbCategoria.getValue();
 
         if (inicio != null && fim != null && fim.isBefore(inicio)) {
-            showAlert(Alert.AlertType.WARNING, "Intervalo inválido", "Data fim não pode ser anterior à data início.");
+            showAlert(Alert.AlertType.WARNING, "Intervalo inválido", "A data fim não pode ser anterior à data início.");
             return;
         }
 
@@ -54,8 +54,19 @@ public class RelatoriosController implements DashboardController.RequiresAuthSer
             return;
         }
 
+        boolean confirmar = confirmarImpressao(lista.size());
+        if (!confirmar) return;
+
         String conteudo = gerarConteudo(lista, inicio, fim, status, categoria);
         imprimirConteudo(conteudo);
+    }
+
+    private boolean confirmarImpressao(int total) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Impressão");
+        alert.setHeaderText(null);
+        alert.setContentText("Encontradas " + total + " O.S. para os filtros. Deseja imprimir?");
+        return alert.showAndWait().filter(bt -> bt == ButtonType.OK).isPresent();
     }
 
     private String gerarConteudo(List<OrdemServico> lista, LocalDate inicio, LocalDate fim, String status, String categoria) {

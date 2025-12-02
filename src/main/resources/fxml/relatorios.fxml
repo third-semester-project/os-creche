@@ -11,7 +11,7 @@
     <top>
         <HBox styleClass="app-bar" alignment="CENTER_LEFT" spacing="12">
             <children>
-                <Label text="Relatorios" styleClass="app-title"/>
+                <Label text="Impressão de Relatório" styleClass="app-title"/>
             </children>
             <padding>
                 <Insets top="8" right="16" bottom="8" left="16"/>
@@ -29,19 +29,18 @@
                     <children>
                         <VBox styleClass="card" spacing="12">
                             <children>
-                                <Label text="Relatorios de O.S." styleClass="section-title"/>
+                                <Label text="Relatório de O.S." styleClass="section-title"/>
                                 <GridPane hgap="12" vgap="8">
                                     <columnConstraints>
                                         <ColumnConstraints minWidth="160" prefWidth="200"/>
                                         <ColumnConstraints hgrow="ALWAYS"/>
                                     </columnConstraints>
 
-                                    <Label text="Periodo:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                                    <Label text="Período:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
                                     <HBox spacing="8" GridPane.rowIndex="0" GridPane.columnIndex="1">
                                         <children>
-                                            <DatePicker fx:id="dpInicio" promptText="Inicio"/>
+                                            <DatePicker fx:id="dpInicio" promptText="Início"/>
                                             <DatePicker fx:id="dpFim" promptText="Fim"/>
-                                            <Button text="Imprimir" onAction="#onImprimir"/>
                                         </children>
                                     </HBox>
 
@@ -51,6 +50,12 @@
                                     <Label text="Categoria:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
                                     <ChoiceBox fx:id="cbCategoria" GridPane.rowIndex="2" GridPane.columnIndex="1" prefWidth="200"/>
                                 </GridPane>
+                                <Label text="Filtra pelo período de abertura. Clique em Imprimir para enviar direto à impressora." styleClass="muted"/>
+                                <HBox alignment="CENTER_RIGHT">
+                                    <children>
+                                        <Button text="🖨 Imprimir" onAction="#onImprimir" styleClass="primary"/>
+                                    </children>
+                                </HBox>
                             </children>
                             <padding>
                                 <Insets top="16" right="16" bottom="16" left="16"/>

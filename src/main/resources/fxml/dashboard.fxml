@@ -40,7 +40,7 @@
                 <ToggleButton fx:id="tbDashboard" text="Início" selected="true" onAction="#goDashboard"/>
                 <ToggleButton fx:id="tbOS" text="Ordens de Serviço" onAction="#goOS"/>
                 <ToggleButton fx:id="tbUsuarios" text="Usuários" onAction="#goUsuarios"/>
-                <ToggleButton fx:id="tbRelatorios" text="Relatórios" onAction="#goRelatorios"/>
+                <ToggleButton fx:id="tbRelatorios" text="Relatório" onAction="#goRelatorios"/>
                 <ToggleButton fx:id="tbConfiguracoes" text="Configurações" onAction="#goConfiguracoes"/>
                 <Region>
                     <VBox.vgrow>ALWAYS</VBox.vgrow>
@@ -158,3 +158,4 @@
         </ScrollPane>
     </center>
 </BorderPane>
+
