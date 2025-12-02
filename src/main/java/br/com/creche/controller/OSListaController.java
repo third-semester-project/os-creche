@@ -61,7 +61,10 @@ public class OSListaController implements DashboardController.RequiresAuthServic
         colCategoria.setCellValueFactory(new PropertyValueFactory<>("categoria"));
         colSolicitante.setCellValueFactory(new PropertyValueFactory<>("solicitante"));
 
-        colResponsavel.setCellValueFactory(new PropertyValueFactory<>("atribuidoPara"));
+        colResponsavel.setCellValueFactory(cd -> {
+            Usuario u = cd.getValue().getAtribuidoPara();
+            return new SimpleStringProperty(u != null ? u.getNome() : "");
+        });
 
         colPrioridade.setCellValueFactory(new PropertyValueFactory<>("prioridade"));
         colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
@@ -167,16 +170,18 @@ public class OSListaController implements DashboardController.RequiresAuthServic
             NovaOSController controller = loader.getController();
             controller.setAuthService(this.authService);
 
-            Scene scene = new Scene(root);
-            URL css = getClass().getResource("/css/app.css");
-            if (css != null) scene.getStylesheets().add(css.toExternalForm());
+            // 🔥 IMPORTANTE: recarrega a lista após salvar
+            controller.setOnSaved(this::carregar);
+
+            Scene scene = SceneFactory.createScene(root);
 
             Stage stage = new Stage();
-            stage.setTitle("Nova Ordem de Servico");
+            stage.setTitle("Nova Ordem de Serviço");
             stage.setScene(scene);
             SceneFactory.applyAppIcon(stage);
             stage.initOwner(btnNovaOSLista.getScene().getWindow());
             stage.initModality(Modality.WINDOW_MODAL);
+            stage.sizeToScene();
             stage.show();
         } catch (Exception e) {
             e.printStackTrace();

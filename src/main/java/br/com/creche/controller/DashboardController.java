@@ -194,6 +194,7 @@ public class DashboardController {
     public void goDashboard() {
         selecionarMenu(tbDashboard);
         root.setCenter(dashboardCenterOriginal);
+        carregarDados();
     }
 
     @FXML
