@@ -163,17 +163,27 @@
     -fx-border-color: #e5e7eb;
     -fx-font-weight: 600;
 }
-.table-row-cell {
-    -fx-background-color: white;
-    -fx-text-fill: #1f2937;
+.table-cell:selected {
+    -fx-text-fill: #1f2937 !important;
 }
+
+.table-row-cell:selected .text {
+    -fx-fill: #1f2937 !important;
+}
+
 .table-row-cell:odd {
-    -fx-background-color: #fafbfe;
+    -fx-background-color: #f0f4ff;
 }
+
+.table-row-cell:hover {
+    -fx-background-color: #e2e8ff;
+}
+
 .table-row-cell:selected {
-    -fx-background-color: #e7eefc;
+    -fx-background-color: #c9d8ff;
     -fx-text-fill: #1f2937;
 }
+
 
 /* Menu e MenuButton */
 .menu-button, .menu-item, .context-menu {
