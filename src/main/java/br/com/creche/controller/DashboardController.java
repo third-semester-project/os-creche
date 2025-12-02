@@ -1,6 +1,5 @@
 package br.com.creche.controller;
 
-import br.com.creche.infra.DB;
 import br.com.creche.model.OrdemServico;
 import br.com.creche.model.Perfil;
 import br.com.creche.model.Usuario;
@@ -21,10 +20,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import java.net.URL;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -47,8 +43,6 @@ public class DashboardController {
 
     @FXML
     private BorderPane root;
-    @FXML
-    private TextField txtBuscaGlobal;
     @FXML
     private MenuButton mbUser;
     @FXML
@@ -176,6 +170,7 @@ public class DashboardController {
             Stage stage = new Stage();
             stage.setTitle("Editar O.S. - " + os.getNumero());
             stage.setScene(scene);
+            SceneFactory.applyAppIcon(stage);
             stage.initOwner(tvOSRecentes.getScene().getWindow());
             stage.initModality(Modality.WINDOW_MODAL);
             stage.show();
@@ -265,6 +260,7 @@ public class DashboardController {
             Stage stage = new Stage();
             stage.setTitle("Nova Ordem de Serviço");
             stage.setScene(scene);
+            SceneFactory.applyAppIcon(stage);
             stage.initOwner(btnNovaOS.getScene().getWindow());
             stage.initModality(Modality.WINDOW_MODAL);
             stage.show();
@@ -275,49 +271,33 @@ public class DashboardController {
     }
 
     @FXML
-    public void onApagarOS() {
-        OrdemServico selecionada = tvOSRecentes.getSelectionModel().getSelectedItem();
-        if (selecionada == null) {
-            showWarning("Nenhuma seleção", "Selecione uma O.S. na tabela para apagar.");
-            return;
-        }
-
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("Confirmar Exclusão");
-        confirm.setHeaderText("Deseja realmente apagar esta O.S.?");
-        confirm.setContentText("Número: " + selecionada.getNumero());
-
-        Optional<ButtonType> result = confirm.showAndWait();
-        if (result.isEmpty() || result.get() != ButtonType.OK) {
-            return;
-        }
-
-        try {
-            repo.delete(selecionada.getId());
-            showInfo("O.S. Removida", "A O.S. número " + selecionada.getNumero() + " foi apagada com sucesso.");
-            carregarDados();
-        } catch (Exception ex) {
-            showError("Erro ao apagar O.S.", ex);
-        }
-    }
-
-    @FXML
     public void onPerfil() {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/perfil.fxml"));
+            Parent rootNode = loader.load();
 
-        alert.setTitle("Perfil de Usuário");
-        alert.setHeaderText("Funcionalidade em desenvolvimento");
-        alert.setContentText("A aba de perfil será implementada em breve. Agradecemos a sua paciência.");
+            PerfilController controller = loader.getController();
+            controller.setAuthService(this.authService);
 
-        alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+            Scene scene = SceneFactory.createScene(rootNode);
 
-        alert.showAndWait();
+            Stage stage = new Stage();
+            stage.setTitle("Meu Perfil");
+            stage.setScene(scene);
+            SceneFactory.applyAppIcon(stage);
+            stage.initOwner(root.getScene().getWindow());
+            stage.initModality(Modality.WINDOW_MODAL);
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            new Alert(Alert.AlertType.ERROR, "Falha ao abrir perfil: " + e.getMessage()).showAndWait();
+        }
     }
 
 
     @FXML
-        public void onSair() {
-        Stage stage = (Stage) pcStatus.getScene().getWindow();
+    public void onSair() {
+        Stage stage = (Stage) root.getScene().getWindow();
         stage.close();
     }
 
@@ -327,7 +307,7 @@ public class DashboardController {
         prefs.remove("email");
         prefs.remove("senha");
 
-        Stage stage = (Stage) pcStatus.getScene().getWindow();
+        Stage stage = (Stage) root.getScene().getWindow();
         stage.close();
     }
 
@@ -378,3 +358,5 @@ public class DashboardController {
         a.showAndWait();
     }
 }
+
+

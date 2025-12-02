@@ -1,6 +1,7 @@
 package br.com.creche;
 
 import br.com.creche.infra.DBHealth;
+import br.com.creche.ui.SceneFactory;
 import br.com.creche.ui.ThemeManager;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -23,7 +24,7 @@ public class MainApp extends Application {
 
 //        scene.getStylesheets().add(getClass().getResource("/css/app.css").toExternalForm());
         stage.setTitle("Sistema de O.S. - Creche");
-//        stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/app.png"))); // opcional
+        SceneFactory.applyAppIcon(stage);
         stage.setResizable(false);
         stage.setScene(scene);
         stage.show();

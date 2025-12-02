@@ -5,12 +5,13 @@
 <?import javafx.scene.layout.*?>
 
 <BorderPane xmlns="http://javafx.com/javafx/17.0.2" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="br.com.creche.controller.RelatoriosController"
             prefWidth="900" prefHeight="680" styleClass="root">
 
     <top>
         <HBox styleClass="app-bar" alignment="CENTER_LEFT" spacing="12">
             <children>
-                <Label text="Relatórios" styleClass="app-title"/>
+                <Label text="Relatorios" styleClass="app-title"/>
             </children>
             <padding>
                 <Insets top="8" right="16" bottom="8" left="16"/>
@@ -28,19 +29,19 @@
                     <children>
                         <VBox styleClass="card" spacing="12">
                             <children>
-                                <Label text="Relatórios de O.S." styleClass="section-title"/>
+                                <Label text="Relatorios de O.S." styleClass="section-title"/>
                                 <GridPane hgap="12" vgap="8">
                                     <columnConstraints>
                                         <ColumnConstraints minWidth="160" prefWidth="200"/>
                                         <ColumnConstraints hgrow="ALWAYS"/>
                                     </columnConstraints>
 
-                                    <Label text="Período:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                                    <Label text="Periodo:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
                                     <HBox spacing="8" GridPane.rowIndex="0" GridPane.columnIndex="1">
                                         <children>
-                                            <DatePicker fx:id="dpInicio" promptText="Início"/>
+                                            <DatePicker fx:id="dpInicio" promptText="Inicio"/>
                                             <DatePicker fx:id="dpFim" promptText="Fim"/>
-                                            <Button text="Gerar" fx:id="btnGerarRelatorio"/>
+                                            <Button text="Imprimir" onAction="#onImprimir"/>
                                         </children>
                                     </HBox>
 
@@ -50,16 +51,6 @@
                                     <Label text="Categoria:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
                                     <ChoiceBox fx:id="cbCategoria" GridPane.rowIndex="2" GridPane.columnIndex="1" prefWidth="200"/>
                                 </GridPane>
-                            </children>
-                            <padding>
-                                <Insets top="16" right="16" bottom="16" left="16"/>
-                            </padding>
-                        </VBox>
-
-                        <VBox styleClass="card" spacing="12">
-                            <children>
-                                <Label text="Resultado" styleClass="section-title"/>
-                                <TextArea fx:id="txtResultado" promptText="Saída/Resumo do relatório..." prefRowCount="12" wrapText="true"/>
                             </children>
                             <padding>
                                 <Insets top="16" right="16" bottom="16" left="16"/>

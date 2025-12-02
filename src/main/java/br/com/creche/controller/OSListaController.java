@@ -5,6 +5,7 @@ import br.com.creche.model.Perfil;
 import br.com.creche.model.Usuario;
 import br.com.creche.repository.OrdemServicoRepository;
 import br.com.creche.service.AuthService;
+import br.com.creche.ui.SceneFactory;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -17,8 +18,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.net.URL;
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -29,6 +28,7 @@ public class OSListaController implements DashboardController.RequiresAuthServic
     @FXML private TextField txtBuscaOS;
     @FXML private Button btnNovaOSLista;
     @FXML private Button btnEditarOSLista;
+    @FXML private Button btnApagarOSLista;
 
     @FXML private TableView<OrdemServico> tvOS;
     @FXML private TableColumn<OrdemServico, String> colNumero;
@@ -41,7 +41,6 @@ public class OSListaController implements DashboardController.RequiresAuthServic
     @FXML private TableColumn<OrdemServico, String> colPrazo;
 
     private final OrdemServicoRepository repo = new OrdemServicoRepository();
-    private final DateTimeFormatter df = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     private AuthService authService;
 
@@ -53,12 +52,10 @@ public class OSListaController implements DashboardController.RequiresAuthServic
 
     @FXML
     public void initialize() {
-        // status
         cbFiltroStatusLista.setItems(FXCollections.observableArrayList("Todos", "ABERTA", "EM_ANDAMENTO", "CONCLUIDA", "CANCELADA"));
         cbFiltroStatusLista.getSelectionModel().selectFirst();
         cbFiltroStatusLista.getSelectionModel().selectedItemProperty().addListener((obs, o, n) -> carregar());
 
-        // tabela
         colNumero.setCellValueFactory(new PropertyValueFactory<>("numero"));
         colTitulo.setCellValueFactory(new PropertyValueFactory<>("titulo"));
         colCategoria.setCellValueFactory(new PropertyValueFactory<>("categoria"));
@@ -69,10 +66,9 @@ public class OSListaController implements DashboardController.RequiresAuthServic
         colPrioridade.setCellValueFactory(new PropertyValueFactory<>("prioridade"));
         colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
         colPrazo.setCellValueFactory(cd -> new SimpleStringProperty(
-                cd.getValue().getPrazo() != null ? df.format(cd.getValue().getPrazo()) : ""
+                cd.getValue().getPrazo() != null ? NovaOSControllerHelper.formatDate(cd.getValue().getPrazo()) : ""
         ));
 
-        // duplo clique: editar
         tvOS.setRowFactory(tv -> {
             TableRow<OrdemServico> row = new TableRow<>();
             row.setOnMouseClicked(evt -> {
@@ -90,7 +86,7 @@ public class OSListaController implements DashboardController.RequiresAuthServic
         if (authService == null || authService.getUsuarioLogado() == null) return;
 
         Usuario user = authService.getUsuarioLogado();
-        Perfil perfil = Perfil.from(user.getPerfil()); // converte a String do BD em enum
+        Perfil perfil = Perfil.from(user.getPerfil());
 
         boolean podeCriar =
                 perfil == Perfil.ADMIN ||
@@ -100,6 +96,9 @@ public class OSListaController implements DashboardController.RequiresAuthServic
         if (btnNovaOSLista != null) {
             btnNovaOSLista.setDisable(!podeCriar);
         }
+        if (btnApagarOSLista != null) {
+            btnApagarOSLista.setDisable(!podeCriar);
+        }
     }
 
     @FXML
@@ -108,10 +107,8 @@ public class OSListaController implements DashboardController.RequiresAuthServic
     }
 
     private void carregar() {
-        // Base: últimas 500 (ajuste conforme necessário)
         List<OrdemServico> list = repo.findRecentes(500);
 
-        // filtro status
         String filtroStatus = cbFiltroStatusLista.getValue();
         if (filtroStatus != null && !"Todos".equalsIgnoreCase(filtroStatus)) {
             list = list.stream()
@@ -119,7 +116,6 @@ public class OSListaController implements DashboardController.RequiresAuthServic
                     .collect(Collectors.toList());
         }
 
-        // busca texto - apenas por número ou título
         String q = txtBuscaOS.getText();
         if (q != null && !q.trim().isEmpty()) {
             String term = q.trim().toLowerCase(Locale.ROOT);
@@ -152,7 +148,7 @@ public class OSListaController implements DashboardController.RequiresAuthServic
             Stage stage = new Stage();
             stage.setTitle("Editar O.S. - " + os.getNumero());
             stage.setScene(scene);
-            // se você estiver dentro do center, pegue a janela pelo próprio TableView
+            SceneFactory.applyAppIcon(stage);
             stage.initOwner(tvOS.getScene().getWindow());
             stage.initModality(Modality.WINDOW_MODAL);
             stage.show();
@@ -176,8 +172,9 @@ public class OSListaController implements DashboardController.RequiresAuthServic
             if (css != null) scene.getStylesheets().add(css.toExternalForm());
 
             Stage stage = new Stage();
-            stage.setTitle("Nova Ordem de Serviço");
+            stage.setTitle("Nova Ordem de Servico");
             stage.setScene(scene);
+            SceneFactory.applyAppIcon(stage);
             stage.initOwner(btnNovaOSLista.getScene().getWindow());
             stage.initModality(Modality.WINDOW_MODAL);
             stage.show();
@@ -193,7 +190,43 @@ public class OSListaController implements DashboardController.RequiresAuthServic
         if (os != null) {
             abrirEditor(os);
         } else {
-            new Alert(Alert.AlertType.WARNING, "Selecione uma Ordem de Serviço na tabela para editar.").showAndWait();
+            new Alert(Alert.AlertType.WARNING, "Selecione uma Ordem de Servico na tabela para editar.").showAndWait();
+        }
+    }
+
+    @FXML
+    public void onApagarOS() {
+        OrdemServico selecionada = tvOS.getSelectionModel().getSelectedItem();
+        if (selecionada == null) {
+            new Alert(Alert.AlertType.WARNING, "Selecione uma Ordem de Servico na tabela para apagar.").showAndWait();
+            return;
+        }
+
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Confirmar Exclusao");
+        confirm.setHeaderText("Deseja realmente apagar esta O.S.?");
+        confirm.setContentText("Numero: " + selecionada.getNumero());
+
+        if (confirm.showAndWait().orElse(ButtonType.CANCEL) != ButtonType.OK) {
+            return;
+        }
+
+        try {
+            repo.delete(selecionada.getId());
+            new Alert(Alert.AlertType.INFORMATION, "A O.S. foi apagada com sucesso.").showAndWait();
+            carregar();
+        } catch (Exception ex) {
+            new Alert(Alert.AlertType.ERROR, "Erro ao apagar O.S.: " + ex.getMessage()).showAndWait();
+        }
+    }
+
+    /**
+     * Helper to keep date formatting consistent without duplicating formatter.
+     */
+    private static class NovaOSControllerHelper {
+        private static final java.time.format.DateTimeFormatter DF = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        static String formatDate(java.time.OffsetDateTime date) {
+            return DF.format(date);
         }
     }
 }

@@ -3,6 +3,7 @@ package br.com.creche.controller;
 import br.com.creche.model.OrdemServico;
 import br.com.creche.model.Usuario;
 import br.com.creche.repository.UsuarioRepository;
+import br.com.creche.ui.SceneFactory;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -88,6 +89,7 @@ public class UsuarioController {
             Stage stage = new Stage();
             stage.setTitle("Novo Usuário");
             stage.setScene(scene);
+            SceneFactory.applyAppIcon(stage);
             stage.initOwner(btnNovoUsuario.getScene().getWindow());
             stage.initModality(Modality.WINDOW_MODAL);
             stage.show();
@@ -142,6 +144,7 @@ public class UsuarioController {
             Stage stage = new Stage();
             stage.setTitle("Editar Usuário - " + usuario.getNome());
             stage.setScene(scene);
+            SceneFactory.applyAppIcon(stage);
             stage.initOwner(tvUsuarios.getScene().getWindow());
             stage.initModality(Modality.WINDOW_MODAL);
             stage.show();
@@ -151,3 +154,4 @@ public class UsuarioController {
         }
     }
 }
+

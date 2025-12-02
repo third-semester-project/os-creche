@@ -17,7 +17,6 @@
                 <Region>
                     <HBox.hgrow>ALWAYS</HBox.hgrow>
                 </Region>
-                <TextField fx:id="txtBuscaGlobal" promptText="Buscar O.S., usuário..." prefWidth="300"/>
                 <MenuButton fx:id="mbUser" text="Admin">
                     <items>
                         <MenuItem text="Perfil" onAction="#onPerfil"/>
@@ -120,7 +119,6 @@
                                                 </Region>
                                                 <ChoiceBox fx:id="cbFiltroStatus"/>
                                                 <Button fx:id="btnNovaOS" text="Nova O.S." onAction="#onNovaOS" styleClass="primary"/>
-                                                <Button fx:id="btnApagarOS" text="Apagar O.S." onAction="#onApagarOS" styleClass="danger"/>
                                             </children>
                                         </HBox>
                                         <TableView fx:id="tvOSRecentes" prefHeight="360">

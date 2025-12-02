@@ -3,8 +3,10 @@ package br.com.creche.repository;
 import br.com.creche.infra.DB;
 import br.com.creche.model.OrdemServico;
 import br.com.creche.model.Usuario;
+
 import java.sql.ResultSet;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,44 +34,104 @@ public class OrdemServicoRepository {
             ps.setInt(1, limit);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    OrdemServico os = new OrdemServico();
-                    os.setId(rs.getLong("id"));
-                    os.setNumero(rs.getString("numero"));
-                    os.setTitulo(rs.getString("titulo"));
-                    os.setDescricao(rs.getString("descricao"));
-                    os.setCategoria(rs.getString("categoria"));
-                    os.setPrioridade(rs.getString("prioridade"));
-                    os.setStatus(rs.getString("status"));
-                    os.setSolicitante(rs.getString("solicitante"));
-
-                    // Datas
-                    os.setDataAbertura(timestampToOffsetDateTime(rs.getTimestamp("data_abertura")));
-                    os.setPrazo(timestampToOffsetDateTime(rs.getTimestamp("prazo")));
-                    os.setDataConclusao(timestampToOffsetDateTime(rs.getTimestamp("data_conclusao")));
-
-                    // Relacionamentos
-                    os.setCriadoPor(rs.getLong("criado_por"));
-
-                    // Criar objeto Usuario para atribuidoPara
-                    Long atribuidoParaId = rs.getLong("atribuido_para");
-                    if (atribuidoParaId != null && atribuidoParaId > 0) {
-                        Usuario responsavel = new Usuario();
-                        responsavel.setId(atribuidoParaId);
-                        responsavel.setNome(rs.getString("atribuido_para_nome"));
-                        os.setAtribuidoPara(responsavel);
-                    } else {
-                        os.setAtribuidoPara(null);
-                    }
-                    os.setObservacoes(rs.getString("observacoes"));
-
-
-                    list.add(os);
+                    list.add(mapOrdemServico(rs));
                 }
             }
         } catch (Exception e) {
             throw new RuntimeException("Erro ao listar O.S.", e);
         }
         return list;
+    }
+
+    public List<OrdemServico> findByFilters(LocalDate dataInicio, LocalDate dataFim, String status, String categoria) {
+        StringBuilder sql = new StringBuilder("""
+            select os.id, os.numero, os.titulo, os.descricao, os.categoria, 
+                   os.prioridade, os.status, os.solicitante, os.data_abertura, 
+                   os.prazo, os.data_conclusao, os.criado_por, os.atribuido_para, 
+                   os.observacoes,
+                   u2.nome as atribuido_para_nome,
+                   u2.email as atribuido_para_email
+            from ordens_servico os
+            left join usuarios u2 on os.atribuido_para = u2.id
+            where 1=1
+        """);
+
+        List<Object> params = new ArrayList<>();
+
+        if (dataInicio != null) {
+            sql.append(" and os.data_abertura::date >= ? ");
+            params.add(dataInicio);
+        }
+        if (dataFim != null) {
+            sql.append(" and os.data_abertura::date <= ? ");
+            params.add(dataFim);
+        }
+        if (status != null && !status.isBlank() && !"Todos".equalsIgnoreCase(status)) {
+            sql.append(" and os.status = ? ");
+            params.add(status);
+        }
+        if (categoria != null && !categoria.isBlank() && !"Todas".equalsIgnoreCase(categoria)) {
+            sql.append(" and os.categoria = ? ");
+            params.add(categoria);
+        }
+
+        sql.append(" order by os.data_abertura desc ");
+
+        List<OrdemServico> list = new ArrayList<>();
+        try (var conn = DB.getConnection();
+             var ps = conn.prepareStatement(sql.toString())) {
+
+            for (int i = 0; i < params.size(); i++) {
+                Object p = params.get(i);
+                if (p instanceof LocalDate) {
+                    ps.setObject(i + 1, p);
+                } else {
+                    ps.setString(i + 1, p.toString());
+                }
+            }
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(mapOrdemServico(rs));
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao gerar relatório de O.S.", e);
+        }
+
+        return list;
+    }
+
+    private OrdemServico mapOrdemServico(ResultSet rs) throws Exception {
+        OrdemServico os = new OrdemServico();
+        os.setId(rs.getLong("id"));
+        os.setNumero(rs.getString("numero"));
+        os.setTitulo(rs.getString("titulo"));
+        os.setDescricao(rs.getString("descricao"));
+        os.setCategoria(rs.getString("categoria"));
+        os.setPrioridade(rs.getString("prioridade"));
+        os.setStatus(rs.getString("status"));
+        os.setSolicitante(rs.getString("solicitante"));
+
+        os.setDataAbertura(timestampToOffsetDateTime(rs.getTimestamp("data_abertura")));
+        os.setPrazo(timestampToOffsetDateTime(rs.getTimestamp("prazo")));
+        os.setDataConclusao(timestampToOffsetDateTime(rs.getTimestamp("data_conclusao")));
+
+        os.setCriadoPor(rs.getLong("criado_por"));
+
+        Long atribuidoParaId = rs.getLong("atribuido_para");
+        if (atribuidoParaId != null && atribuidoParaId > 0) {
+            Usuario responsavel = new Usuario();
+            responsavel.setId(atribuidoParaId);
+            responsavel.setNome(rs.getString("atribuido_para_nome"));
+            responsavel.setEmail(rs.getString("atribuido_para_email"));
+            os.setAtribuidoPara(responsavel);
+        } else {
+            os.setAtribuidoPara(null);
+        }
+        os.setObservacoes(rs.getString("observacoes"));
+
+        return os;
     }
 
     private OffsetDateTime timestampToOffsetDateTime(Timestamp timestamp) {
