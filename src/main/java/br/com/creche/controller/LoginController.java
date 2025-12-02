@@ -1,9 +1,7 @@
 package br.com.creche.controller;
 
-import br.com.creche.MainApp;
 import br.com.creche.service.AuthService;
 import br.com.creche.ui.SceneFactory;
-import br.com.creche.ui.ThemeManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
