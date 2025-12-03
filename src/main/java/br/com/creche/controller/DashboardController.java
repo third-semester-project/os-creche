@@ -322,15 +322,6 @@ public class DashboardController {
         boolean isGestor = perfil == Perfil.GESTOR;
         boolean isOperador = perfil == Perfil.OPERADOR;
 
-        // tbUsuarios.setVisible(isAdmin || isGestor);
-        // tbUsuarios.setManaged(isAdmin || isGestor);
-        //
-        // tbRelatorios.setVisible(isAdmin || isGestor);
-        // tbRelatorios.setManaged(isAdmin || isGestor);
-        //
-        // tbConfiguracoes.setVisible(isAdmin);
-        // tbConfiguracoes.setManaged(isAdmin);
-
         if (btnNovaOS != null) {
             btnNovaOS.setDisable(!(isAdmin || isGestor || isOperador));
         }
