@@ -13,14 +13,12 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleButton?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane fx:id="root" prefHeight="700" prefWidth="1200" styleClass="root" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.com.creche.controller.DashboardController">
+<BorderPane fx:id="root" prefHeight="700" prefWidth="1200" styleClass="root" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.com.creche.controller.DashboardController">
 
     <!-- Top App Bar -->
     <top>
@@ -51,16 +49,7 @@
         <VBox prefWidth="220" spacing="8" styleClass="side-menu">
             <children>
                 <Label styleClass="side-title" text="Navegação" />
-            <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="106.0">
-               <children>
-                  <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../images/home-local-alt%20(1).png" />
-                     </image>
-                  </ImageView>
-                      <ToggleButton fx:id="tbDashboard" onAction="#goDashboard" prefHeight="25.0" prefWidth="45.0" selected="true" text="Início" />
-               </children>
-            </HBox>
+                <ToggleButton fx:id="tbDashboard" onAction="#goDashboard" prefHeight="25.0" selected="true" text="Início" />
                 <ToggleButton fx:id="tbOS" onAction="#goOS" prefHeight="25.0" text="Ordens de Serviço" />
                 <ToggleButton fx:id="tbUsuarios" onAction="#goUsuarios" prefHeight="25.0" text="Usuários" />
                 <ToggleButton fx:id="tbRelatorios" onAction="#goRelatorios" prefHeight="25.0" text="Relatórios" />
