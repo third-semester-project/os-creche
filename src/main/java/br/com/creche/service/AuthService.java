@@ -2,7 +2,6 @@ package br.com.creche.service;
 
 import br.com.creche.model.Usuario;
 import br.com.creche.repository.UsuarioRepository;
-import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.Optional;
 

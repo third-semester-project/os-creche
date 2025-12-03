@@ -1,12 +1,10 @@
 package br.com.creche;
 
-import br.com.creche.infra.DBHealth;
 import br.com.creche.ui.SceneFactory;
 import br.com.creche.ui.ThemeManager;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import java.util.prefs.Preferences;

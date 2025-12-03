@@ -47,11 +47,6 @@
                                         </children>
                                     </HBox>
 
-<!--                                     <Label text="Idioma:" GridPane.rowIndex="2" GridPane.columnIndex="0"/> -->
-<!--                                     <ChoiceBox fx:id="cbIdioma" GridPane.rowIndex="2" GridPane.columnIndex="1" prefWidth="200"/> -->
-
-<!--                                     <Label text="Notificações por e-mail:" GridPane.rowIndex="3" GridPane.columnIndex="0"/> -->
-<!--                                     <CheckBox fx:id="chkEmail" GridPane.rowIndex="3" GridPane.columnIndex="1" text="Ativar"/> -->
                                 </GridPane>
                             </children>
                             <padding>
