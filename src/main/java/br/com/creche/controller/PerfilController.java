@@ -13,11 +13,12 @@ import java.util.Optional;
 
 public class PerfilController {
 
-    @FXML private TextField txtNome;
-    @FXML private TextField txtEmail;
-    @FXML private PasswordField txtNovaSenha;
-    @FXML private PasswordField txtConfirmaSenha;
-    @FXML private Label lblErro;
+    @FXML
+    private TextField txtNome, txtEmail;
+    @FXML
+    private PasswordField txtNovaSenha, txtConfirmaSenha;
+    @FXML
+    private Label lblErro;
 
     private final UsuarioRepository repository = new UsuarioRepository();
     private AuthService authService;

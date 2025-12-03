@@ -17,10 +17,10 @@ import java.util.stream.Collectors;
 
 public class RelatoriosController implements DashboardController.RequiresAuthService {
 
-    @FXML private DatePicker dpInicio;
-    @FXML private DatePicker dpFim;
-    @FXML private ChoiceBox<String> cbStatus;
-    @FXML private ChoiceBox<String> cbCategoria;
+    @FXML
+    private DatePicker dpInicio, dpFim;
+    @FXML
+    private ChoiceBox<String> cbStatus, cbCategoria;
 
     private final OrdemServicoRepository repo = new OrdemServicoRepository();
     private final DateTimeFormatter df = DateTimeFormatter.ofPattern("dd/MM/yyyy");

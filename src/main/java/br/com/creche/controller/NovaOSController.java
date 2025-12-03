@@ -3,6 +3,7 @@ package br.com.creche.controller;
 import br.com.creche.infra.DB;
 import br.com.creche.model.Usuario;
 import br.com.creche.service.AuthService;
+import br.com.creche.ui.ThemeManager;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -18,38 +19,19 @@ import java.util.Optional;
 public class NovaOSController {
 
     @FXML
-    private TextField txtNumero;
+    private TextField txtNumero, txtTitulo, txtSolicitante;
     @FXML
-    private ComboBox<String> cbCategoria;
-    @FXML
-    private TextField txtTitulo;
-    @FXML
-    private TextField txtSolicitante;
-    @FXML
-    private TextArea txtDescricao;
-    @FXML
-    private ComboBox<String> cbPrioridade;
-    @FXML
-    private ComboBox<String> cbStatus;
+    private ComboBox<String> cbCategoria, cbPrioridade, cbStatus;
     @FXML
     private ComboBox<UsuarioItem> cbAtribuidoPara;
     @FXML
     private DatePicker dpPrazo;
+    @FXML
+    private TextArea txtObservacoes, txtDescricao;
+    @FXML
+    private Button btnSalvar, btnSalvarRodape, btnCancelar, btnLimpar, btnVoltar;
 
-    @FXML
-    private TextArea txtObservacoes;
-
-    @FXML
-    private Button btnSalvar;
-    @FXML
-    private Button btnSalvarRodape;
-    @FXML
-    private Button btnCancelar;
-    @FXML
-    private Button btnLimpar;
-    @FXML
-    private Button btnVoltar;
-
+    private ThemeManager.Theme temaSelecionado = ThemeManager.Theme.SISTEMA;
     private Runnable onSaved;
 
     // Injetado pelo chamador (ex: Dashboard) após carregar o FXML
@@ -63,14 +45,6 @@ public class NovaOSController {
         // Após injetar, definimos o usuário logado
         Usuario u = (authService != null) ? authService.getUsuarioLogado() : null;
         this.usuarioLogadoId = (u != null) ? u.getId() : null;
-
-        // Se a combo de usuários já estiver carregada, podemos pré-selecionar o logado
-//        if (u != null && cbAtribuidoPara != null && cbAtribuidoPara.getItems() != null) {
-//            cbAtribuidoPara.getItems().stream()
-//                    .filter(item -> Objects.equals(item.id(), u.getId()))
-//                    .findFirst()
-//                    .ifPresent(item -> cbAtribuidoPara.getSelectionModel().select(item));
-//        }
     }
 
     private final ZoneId zoneId = ZoneId.systemDefault();

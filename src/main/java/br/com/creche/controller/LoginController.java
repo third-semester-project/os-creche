@@ -8,22 +8,34 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
 import java.util.prefs.Preferences;
 
 public class LoginController {
 
-    @FXML private TextField txtEmail;
-    @FXML private PasswordField txtSenha;
-    @FXML private CheckBox chkLembrar;
-    @FXML private Button btnEntrar;
-    @FXML private Label lblErro;
+    @FXML
+    private TextField txtEmail, txtSenhaVisivel;
+    @FXML
+    private PasswordField txtSenha;
+    @FXML
+    private CheckBox chkLembrar;
+    @FXML
+    private Button btnEntrar;
+    @FXML
+    private Label lblErro;
+    @FXML
+    private ImageView btnMostrarSenha, btnOcultarSenha;
 
+    private boolean senhaVisivel = false;
     private final AuthService authService = new AuthService();
 
     @FXML
     public void initialize() {
+        txtSenhaVisivel.setVisible(false);
+        btnOcultarSenha.setVisible(false);
         if (!br.com.creche.infra.DBHealth.testConnection()) {
             lblErro.setText("Sem conexão com o banco. Verifique as credenciais.");
             lblErro.setVisible(true);
@@ -74,6 +86,29 @@ public class LoginController {
         }
     }
 
+    // Configura o botão de visualizar senha
+    @FXML
+    private void toggleMostrarSenha() {
+        senhaVisivel = !senhaVisivel;
+
+        if (senhaVisivel) {
+            txtSenhaVisivel.setText(txtSenha.getText());
+            txtSenhaVisivel.setVisible(true);
+            txtSenha.setVisible(false);
+
+            btnMostrarSenha.setImage(
+                    new Image(getClass().getResourceAsStream("/images/olho-cruzado.png"))
+            );
+        } else {
+            txtSenha.setText(txtSenhaVisivel.getText());
+            txtSenha.setVisible(true);
+            txtSenhaVisivel.setVisible(false);
+
+            btnMostrarSenha.setImage(
+                    new Image(getClass().getResourceAsStream("/images/olho.png"))
+            );
+        }
+    }
 
     @FXML
     public void onEntrar(ActionEvent e) {
