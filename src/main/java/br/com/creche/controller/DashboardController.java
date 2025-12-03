@@ -48,15 +48,13 @@ public class DashboardController {
     @FXML
     private ToggleButton tbDashboard, tbOS, tbUsuarios, tbRelatorios, tbConfiguracoes;
     @FXML
-    private Label lblKpiAbertas, lblKpiEmAndamento, lblKpiConcluidas, lblKpiAtrasadas;
+    private Label lblKpiAbertas, lblKpiEmAndamento, lblKpiConcluidas, lblKpiAtrasadas, telaAtual;
     @FXML
     private TableView<OrdemServico> tvOSRecentes;
     @FXML
-    private TableColumn<OrdemServico, String> colNumero, colTitulo, colCategoria, colResponsavel, colStatus, colPrazo;
+    private TableColumn<OrdemServico, String> colNumero, colTitulo, colCategoria, colResponsavel;
     @FXML
-    private TableColumn<OrdemServico, String> colPrioridade;
-    @FXML
-    private TableColumn<OrdemServico, String> colSolicitante;
+    private TableColumn<OrdemServico, String> colStatus, colPrazo, colPrioridade, colSolicitante;
     @FXML
     private ChoiceBox<String> cbFiltroStatus;
     @FXML
@@ -194,6 +192,7 @@ public class DashboardController {
     public void goDashboard() {
         selecionarMenu(tbDashboard);
         root.setCenter(dashboardCenterOriginal);
+        telaAtual.setText("Dashboard");
         carregarDados();
     }
 
@@ -201,24 +200,28 @@ public class DashboardController {
     public void goOS() {
         selecionarMenu(tbOS);
         setCenterCached("/fxml/os-lista.fxml");
+        telaAtual.setText("Editar/Incluir Ordem de Serviço");
     }
 
     @FXML
     public void goUsuarios() {
         selecionarMenu(tbUsuarios);
         setCenterCached("/fxml/usuarios.fxml");
+        telaAtual.setText("Editar/Incluir Usuário");
     }
 
     @FXML
     public void goRelatorios() {
         selecionarMenu(tbRelatorios);
         setCenterCached("/fxml/relatorios.fxml");
+        telaAtual.setText("Relatórios");
     }
 
     @FXML
     public void goConfiguracoes() {
         selecionarMenu(tbConfiguracoes);
         setCenterCached("/fxml/configuracoes.fxml");
+        telaAtual.setText("Configurações");
     }
 
     private void setCenterCached(String fxmlPath) {
@@ -272,83 +275,110 @@ public class DashboardController {
     }
 
     @FXML
-    public void onPerfil() {
+    public void onApagarOS() {
+        OrdemServico selecionada = tvOSRecentes.getSelectionModel().getSelectedItem();
+        if (selecionada == null) {
+            showWarning("Nenhuma seleção", "Selecione uma O.S. na tabela para apagar.");
+            return;
+        }
+
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Confirmar Exclusão");
+        confirm.setHeaderText("Deseja realmente apagar esta O.S.?");
+        confirm.setContentText("Número: " + selecionada.getNumero());
+
+        Optional<ButtonType> result = confirm.showAndWait();
+        if (result.isEmpty() || result.get() != ButtonType.OK) {
+            return;
+        }
+
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/perfil.fxml"));
-            Parent rootNode = loader.load();
-
-            PerfilController controller = loader.getController();
-            controller.setAuthService(this.authService);
-
-            Scene scene = SceneFactory.createScene(rootNode);
-
-            Stage stage = new Stage();
-            stage.setTitle("Meu Perfil");
-            stage.setScene(scene);
-            SceneFactory.applyAppIcon(stage);
-            stage.initOwner(root.getScene().getWindow());
-            stage.initModality(Modality.WINDOW_MODAL);
-            stage.show();
-        } catch (Exception e) {
-            e.printStackTrace();
-            new Alert(Alert.AlertType.ERROR, "Falha ao abrir perfil: " + e.getMessage()).showAndWait();
+            repo.delete(selecionada.getId());
+            showInfo("O.S. Removida", "A O.S. número " + selecionada.getNumero() + " foi apagada com sucesso.");
+            carregarDados();
+        } catch (Exception ex) {
+            showError("Erro ao apagar O.S.", ex);
         }
     }
 
+        @FXML
+        public void onPerfil () {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/perfil.fxml"));
+                Parent rootNode = loader.load();
 
-    @FXML
-    public void onSair() {
-        Stage stage = (Stage) root.getScene().getWindow();
-        stage.close();
-    }
+                PerfilController controller = loader.getController();
+                controller.setAuthService(this.authService);
 
-    @FXML
-    public void onSairESemLembrar() {
-        Preferences prefs = Preferences.userRoot().node("br.com.creche.login");
-        prefs.remove("email");
-        prefs.remove("senha");
+                Scene scene = SceneFactory.createScene(rootNode);
 
-        Stage stage = (Stage) root.getScene().getWindow();
-        stage.close();
-    }
-
-    private void configurarPermissoes() {
-        if (authService == null || authService.getUsuarioLogado() == null) return;
-
-        Usuario user = authService.getUsuarioLogado();
-        Perfil perfil = user.getPerfilEnum();
-
-        boolean isAdmin = perfil == Perfil.ADMIN;
-        boolean isGestor = perfil == Perfil.GESTOR;
-        boolean isOperador = perfil == Perfil.OPERADOR;
-
-        if (btnNovaOS != null) {
-            btnNovaOS.setDisable(!(isAdmin || isGestor || isOperador));
+                Stage stage = new Stage();
+                stage.setTitle("Meu Perfil");
+                stage.setScene(scene);
+                SceneFactory.applyAppIcon(stage);
+                stage.initOwner(root.getScene().getWindow());
+                stage.initModality(Modality.WINDOW_MODAL);
+                stage.show();
+            } catch (Exception e) {
+                e.printStackTrace();
+                new Alert(Alert.AlertType.ERROR, "Falha ao abrir perfil: " + e.getMessage()).showAndWait();
+            }
         }
-    }
 
-    private void showError(String title, Exception ex) {
-        String msg = Optional.ofNullable(ex.getMessage()).orElse(ex.toString());
-        showAlert(Alert.AlertType.ERROR, title, msg);
-        ex.printStackTrace();
-    }
 
-    private void showInfo(String title, String content) {
-        showAlert(Alert.AlertType.INFORMATION, title, content);
-    }
+        @FXML
+        public void onSair () {
+            Stage stage = (Stage) root.getScene().getWindow();
+            stage.close();
+        }
 
-    private void showWarning(String title, String content) {
-        showAlert(Alert.AlertType.WARNING, title, content);
-    }
+        @FXML
+        public void onSairESemLembrar () {
+            Preferences prefs = Preferences.userRoot().node("br.com.creche.login");
+            prefs.remove("email");
+            prefs.remove("senha");
 
-    private void showAlert(Alert.AlertType type, String title, String content) {
-        Alert a = new Alert(type);
-        a.setTitle(title);
-        a.setHeaderText(null);
-        a.setContentText(content);
-        a.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
-        a.showAndWait();
-    }
+            Stage stage = (Stage) root.getScene().getWindow();
+            stage.close();
+        }
+
+        private void configurarPermissoes () {
+            if (authService == null || authService.getUsuarioLogado() == null) return;
+
+            Usuario user = authService.getUsuarioLogado();
+            Perfil perfil = user.getPerfilEnum();
+
+            boolean isAdmin = perfil == Perfil.ADMIN;
+            boolean isGestor = perfil == Perfil.GESTOR;
+            boolean isOperador = perfil == Perfil.OPERADOR;
+
+            if (btnNovaOS != null) {
+                btnNovaOS.setDisable(!(isAdmin || isGestor || isOperador));
+            }
+        }
+
+        private void showError (String title, Exception ex){
+            String msg = Optional.ofNullable(ex.getMessage()).orElse(ex.toString());
+            showAlert(Alert.AlertType.ERROR, title, msg);
+            ex.printStackTrace();
+        }
+
+        private void showInfo (String title, String content){
+            showAlert(Alert.AlertType.INFORMATION, title, content);
+        }
+
+        private void showWarning (String title, String content){
+            showAlert(Alert.AlertType.WARNING, title, content);
+        }
+
+        private void showAlert (Alert.AlertType type, String title, String content){
+            Alert a = new Alert(type);
+            a.setTitle(title);
+            a.setHeaderText(null);
+            a.setContentText(content);
+            a.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+            a.showAndWait();
+        }
 }
 
 
