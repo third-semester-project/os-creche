@@ -30,11 +30,8 @@ public class ConfiguracoesController implements DashboardController.RequiresAuth
         cbTema.setItems(FXCollections.observableArrayList("Sistema", "Claro", "Escuro"));
         carregarPreferencias();
 
-        // aplica imediatamente ao trocar
         cbTema.getSelectionModel().selectedItemProperty().addListener((obs, o, n) -> {
             temaSelecionado = map(n);
-            aplicarTemaNaCenaAtual();
-            salvarPreferencias();
         });
     }
 
