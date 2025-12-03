@@ -24,21 +24,18 @@ import java.util.stream.Collectors;
 
 public class OSListaController implements DashboardController.RequiresAuthService {
 
-    @FXML private ChoiceBox<String> cbFiltroStatusLista;
-    @FXML private TextField txtBuscaOS;
-    @FXML private Button btnNovaOSLista;
-    @FXML private Button btnEditarOSLista;
-    @FXML private Button btnApagarOSLista;
-
-    @FXML private TableView<OrdemServico> tvOS;
-    @FXML private TableColumn<OrdemServico, String> colNumero;
-    @FXML private TableColumn<OrdemServico, String> colTitulo;
-    @FXML private TableColumn<OrdemServico, String> colCategoria;
-    @FXML private TableColumn<OrdemServico, String> colSolicitante;
-    @FXML private TableColumn<OrdemServico, String> colResponsavel;
-    @FXML private TableColumn<OrdemServico, String> colPrioridade;
-    @FXML private TableColumn<OrdemServico, String> colStatus;
-    @FXML private TableColumn<OrdemServico, String> colPrazo;
+    @FXML
+    private ChoiceBox<String> cbFiltroStatusLista;
+    @FXML
+    private TextField txtBuscaOS;
+    @FXML
+    private Button btnNovaOSLista, btnEditarOSLista, btnApagarOSLista;
+    @FXML
+    private TableView<OrdemServico> tvOS;
+    @FXML
+    private TableColumn<OrdemServico, String> colNumero, colTitulo, colResponsavel, colSolicitante;
+    @FXML
+    private TableColumn<OrdemServico, String> colCategoria, colPrioridade, colStatus, colPrazo;
 
     private final OrdemServicoRepository repo = new OrdemServicoRepository();
 
@@ -137,16 +134,14 @@ public class OSListaController implements DashboardController.RequiresAuthServic
     private void abrirEditor(OrdemServico os) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/editar-os.fxml"));
-            Parent root = loader.load();
+            Parent rootNode = loader.load();
 
             EditarOSController controller = loader.getController();
             controller.setAuthService(this.authService);
             controller.setOrdemServico(os);
             controller.setOnSaved(this::carregar);
 
-            Scene scene = new Scene(root);
-            URL css = getClass().getResource("/css/app.css");
-            if (css != null) scene.getStylesheets().add(css.toExternalForm());
+            Scene scene = SceneFactory.createScene(rootNode);
 
             Stage stage = new Stage();
             stage.setTitle("Editar O.S. - " + os.getNumero());
